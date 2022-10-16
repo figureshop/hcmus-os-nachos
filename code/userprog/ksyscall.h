@@ -190,4 +190,36 @@ void SysPrintChar(char character)
   kernel->synchConsoleOut->PutChar(character);
 }
 
+int SysExit(int ID) {
+  return kernel->pTab->ExitUpdate(ID); 
+}
+
+int SysExec(char* name) {
+    OpenFile* oFile = kernel->fileSystem->Open(name);
+    if (oFile == nullptr) {
+        DEBUG(dbgSys, "\nExec:: Can't open this file.");
+        return -1;
+    }
+
+    delete oFile;
+
+    // Return child process id
+    return kernel->pTab->ExecUpdate(name);
+}
+
+int SysJoin(int ID) {
+  return kernel->pTab->JoinUpdate(ID);
+}
+
+int SysOpen(char* filename, int type) {
+  if (type != 0 && type != 1) return -1;
+
+    int ID = (int)kernel->fileSystem->Open(filename);
+    if (ID == -1) 
+      return -1;
+
+    DEBUG(dbgSys, "\nOpened file");
+    return ID;
+}
+
 #endif /* ! __USERPROG_KSYSCALL_H__ */
